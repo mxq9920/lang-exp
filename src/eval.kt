@@ -1,3 +1,5 @@
+@file:JvmName("SimpleLangEval")
+
 import java.util.*
 
 /**
@@ -117,8 +119,10 @@ fun main(args: Array<String>) {
     var lines = lang.lines().filter { !it.trim().isEmpty() }.filter { !it.trim().startsWith("//") }.map { it.trim() }
     var stats = ArrayList<Stat>()
     lines.forEach { line ->
-        if (line.contains("=")) {
-            var (id, exprStr) = line.split("\\s*=\\s*".toRegex())
+        val assignMatchResult = Regex("(\\w+)\\s*=\\s*(\\w+)").matchEntire(line)
+        if (assignMatchResult != null) {
+            var id = assignMatchResult.groupValues[1]
+            var exprStr = assignMatchResult.groupValues[2]
             val expr: Expr
             if (exprStr.matches("\\d+".toRegex())) {
                 expr = Expr.IntExpr(exprStr.toInt())
