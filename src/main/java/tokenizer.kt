@@ -1,61 +1,8 @@
-/**
- * Created by ming on 2016/3/28.
- */
-@file:JvmName("LittleSimpleLangEval")
-
 import java.util.*
 
-val sample = """
-a = (1 + 2) * 3
-b = 4 - a * 5
-print(a * b)
-if (a == b) {
-    print(123)
-}
-"""
-
-sealed class Token {
-    // variable/function name
-    class ID(val id: String) : Token() {
-        override fun toString(): String {
-            return "ID:[$id]"
-        }
-    }
-
-    // =
-    class ASSIGN : Token()
-
-    // ==
-    class EQ : Token()
-
-    // 1-9+
-    class NUM(val num: Int) : Token() {
-        override fun toString(): String {
-            return "NUM:[$num]"
-        }
-    }
-
-    // (
-    class LB : Token()
-
-    // )
-    class RB : Token()
-
-    // {
-    class LBR : Token()
-
-    // }
-    class RBR : Token()
-
-    // calculate operator
-    sealed class CAL : Token() {
-        class ADD : CAL()
-        class SUB : CAL()
-        class MUL : CAL()
-        class DIV : CAL()
-        class MOD : CAL()
-    }
-}
+/**
+ * Created by ming on 2016/3/29.
+ */
 
 class Tokenizer(val code: String) {
 
@@ -117,10 +64,4 @@ class Tokenizer(val code: String) {
         return tokens
     }
 
-}
-
-fun main(args: Array<String>) {
-    val tokenizer = Tokenizer(sample)
-    val tokens = tokenizer.toTokens()
-    println(tokens)
 }
