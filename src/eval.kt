@@ -1,10 +1,9 @@
-@file:JvmName("SimpleLangEval")
-
-import java.util.*
-
 /**
  * Created by ming on 2016/3/25.
  */
+@file:JvmName("SimpleLangEval")
+
+import java.util.*
 
 private var lang = """
 // start
