@@ -7,7 +7,7 @@ val sample = """
 a = (1 + 2) * 3
 b = 4 - a * 5
 print(a * b)
-if (a == b) {
+if (a + b) {
     print(123)
 }
 """
@@ -15,5 +15,7 @@ if (a == b) {
 fun main(args: Array<String>) {
     val tokenizer = Tokenizer(sample)
     val tokens = tokenizer.toTokens()
-    println(tokens)
+    val parser = Parser(tokens)
+    val ast = parser.parse()
+    println(ast)
 }
