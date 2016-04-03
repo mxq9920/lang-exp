@@ -22,19 +22,11 @@ sealed class ASTNode {
 
         sealed class BoolTypeExpr: Expr() {
             class BoolExpr(val value: Boolean) : BoolTypeExpr()
-            class BoolCalExpr(val op: BoolOP, val lp: BoolTypeExpr, val rp: BoolTypeExpr)
+            class BoolCalExpr(val op: LogicOP, val lp: BoolTypeExpr, val rp: BoolTypeExpr)
             class CmpCalExpr(val op: CmpOP, val lp: NumTypeExpr, val rp: NumTypeExpr)
         }
         class SymbolExpr(val id: String) : Expr()
     }
-}
-
-fun String.toCAL() = when (this) {
-    "+" -> Token.CAL.ADD()
-    "-" -> Token.CAL.SUB()
-    "*" -> Token.CAL.MUL()
-    "/" -> Token.CAL.DIV()
-    else -> throw RuntimeException()
 }
 
 fun String.toOP() = when (this) {

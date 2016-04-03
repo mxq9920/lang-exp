@@ -12,9 +12,6 @@ sealed class Token {
     // =
     class ASSIGN : Token()
 
-    // ==
-    class EQ : Token()
-
     // 1-9+
     class NUM(val num: Int) : Token() {
         override fun toString(): String {
@@ -35,7 +32,9 @@ sealed class Token {
     class RBR : Token()
 
     // calculate operator
-    class OP(val op: OPT) : Token()
+    class OP(val op: OPT) : Token() {
+        override fun toString() = "Token\$OP[$op]"
+    }
 }
 
 interface OPT {
@@ -49,7 +48,7 @@ enum class MathOP(override  val priority: Int, val str: String) : OPT {
     DIV(5, "/"),
 }
 
-enum class BoolOP(override val priority: Int, val str: String) : OPT {
+enum class LogicOP(override val priority: Int, val str: String) : OPT {
     AND(2, "&&"),
     OR(1, "||"),
     NOT(3, "!"),
