@@ -35,11 +35,33 @@ sealed class Token {
     class RBR : Token()
 
     // calculate operator
-    sealed class CAL(val pr: Int, val symbol: String) : Token() {
-        class ADD : CAL(0, "+")
-        class SUB : CAL(0, "-")
-        class MUL : CAL(1, "*")
-        class DIV : CAL(1, "/")
-        class MOD : CAL(1, "%")
-    }
+    class OP(val op: OPT) : Token()
+}
+
+interface OPT {
+    val priority: Int
+}
+
+enum class MathOP(override  val priority: Int, val str: String) : OPT {
+    ADD(4, "+"),
+    SUB(4, "-"),
+    MUL(5, "*"),
+    DIV(5, "/"),
+}
+
+enum class BoolOP(override val priority: Int, val str: String) : OPT {
+    AND(2, "&&"),
+    OR(1, "||"),
+    NOT(3, "!"),
+}
+
+enum class CmpOP(override val priority: Int,val str: String) : OPT {
+    NE("!="),
+    EQ("=="),
+    GT(">"),
+    LT("<"),
+    GE(">="),
+    LE("<=");
+
+    private constructor(str: String): this(0, str)
 }

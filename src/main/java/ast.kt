@@ -15,14 +15,18 @@ sealed class ASTNode {
     }
 
     sealed class Expr : ASTNode() {
-        class NumExpr(val num: Int) : Expr()
-        class SymbolExpr(val id: String) : Expr()
-        class CalExpr(val opr: OP, val lp: Expr, val rp: Expr) : Expr()
-    }
-}
+        sealed class NumTypeExpr: Expr() {
+            class NumExpr(val num: Int) : NumTypeExpr()
+            class MathCalExpr(val opr: MathOP, val lp: NumTypeExpr, val rp: NumTypeExpr) : NumTypeExpr()
+        }
 
-enum class OP {
-    ADD, SUB, MUL, DIV
+        sealed class BoolTypeExpr: Expr() {
+            class BoolExpr(val value: Boolean) : BoolTypeExpr()
+            class BoolCalExpr(val op: BoolOP, val lp: BoolTypeExpr, val rp: BoolTypeExpr)
+            class CmpCalExpr(val op: CmpOP, val lp: NumTypeExpr, val rp: NumTypeExpr)
+        }
+        class SymbolExpr(val id: String) : Expr()
+    }
 }
 
 fun String.toCAL() = when (this) {
@@ -34,9 +38,9 @@ fun String.toCAL() = when (this) {
 }
 
 fun String.toOP() = when (this) {
-    "+" -> OP.ADD
-    "-" -> OP.SUB
-    "*" -> OP.MUL
-    "/" -> OP.DIV
+    "+" -> MathOP.ADD
+    "-" -> MathOP.SUB
+    "*" -> MathOP.MUL
+    "/" -> MathOP.DIV
     else -> throw RuntimeException()
 }

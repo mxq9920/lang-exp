@@ -73,11 +73,11 @@ class Parser(val tokens: List<Token>) {
         return ASTNode.Stat.FuncCallStat(symbol, exprList)
     }
 
-    private fun parseFactor(): ASTNode.Expr? {
+    private fun parseFactor(): ASTNode.Expr.NumTypeExpr? {
         val token = tokens[idx]
         if (token is Token.NUM) {
             idx++
-            return ASTNode.Expr.NumExpr(token.num)
+            return ASTNode.Expr.NumTypeExpr.NumExpr(token.num)
         }
 
         if (token is Token.ID) {
@@ -97,27 +97,27 @@ class Parser(val tokens: List<Token>) {
     }
 
     private fun parseExpr(): ASTNode.Expr {
-        val opStack = Stack<Token.CAL>()
-        val pStack = Stack<ASTNode.Expr>()
+        val opStack = Stack<Token.OP>()
+        val pStack = Stack<ASTNode.Expr.NumTypeExpr>()
         while (true) {
             val p = parseFactor() ?: break
             pStack.push(p)
             val opToken = tokens[idx]
-            if (opToken !is Token.CAL || (!opStack.isEmpty() && opStack.lastElement().pr >= opToken.symbol.toCAL().pr)) {
+            if (opToken !is Token.OP || (!opStack.isEmpty() && opStack.lastElement().op.priority >= opToken.op.priority)) {
                 while (!opStack.empty()) {
                     val rp = pStack.pop()
                     val lp = pStack.pop()
                     val op = opStack.pop()
-                    val exp = ASTNode.Expr.CalExpr(op.symbol.toOP(), lp, rp)
+                    val exp = ASTNode.Expr.NumTypeExpr.MathCalExpr(op.op as MathOP, lp, rp)
                     pStack.push(exp)
                 }
             }
 
-            if (opToken !is Token.CAL) {
+            if (opToken !is Token.OP) {
                 break
             }
 
-            opStack.push(opToken.symbol.toCAL())
+            opStack.push(opToken.op)
             idx++
         }
         return pStack.pop()

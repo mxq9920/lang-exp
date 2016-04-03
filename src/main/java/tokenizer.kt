@@ -18,29 +18,27 @@ class Tokenizer(val code: String) {
             val c = cs[idx]
             if (buf.isEmpty()) {
                 var specialToken = true
-
-                if (c == '=' && idx != cs.size - 1 && cs[idx + 1] == '=') {
-                    tokens.add(Token.EQ())
-                    idx += 2
-                    continue
-                } else {
-                    when (c) {
-                        '(' -> tokens.add(Token.LB())
-                        ')' -> tokens.add(Token.RB())
-                        '{' -> tokens.add(Token.LBR())
-                        '}' -> tokens.add(Token.RBR())
-                        '=' -> tokens.add(Token.ASSIGN())
-                        '+' -> tokens.add(Token.CAL.ADD())
-                        '-' -> tokens.add(Token.CAL.SUB())
-                        '*' -> tokens.add(Token.CAL.MUL())
-                        '/' -> tokens.add(Token.CAL.DIV())
-                        '%' -> tokens.add(Token.CAL.MOD())
-                        else -> specialToken = false
-                    }
-                    if (specialToken) {
+                when (c) {
+                    '(' -> tokens.add(Token.LB())
+                    ')' -> tokens.add(Token.RB())
+                    '{' -> tokens.add(Token.LBR())
+                    '}' -> tokens.add(Token.RBR())
+                    '=' -> if (cs[idx + 1] == '=') {
+                        tokens.add(Token.EQ())
                         idx++
-                        continue
                     }
+                    else {
+                        tokens.add(Token.ASSIGN())
+                    }
+                    '+' -> tokens.add(Token.OP(MathOP.ADD))
+                    '-' -> tokens.add(Token.OP(MathOP.SUB))
+                    '*' -> tokens.add(Token.OP(MathOP.MUL))
+                    '/' -> tokens.add(Token.OP(MathOP.DIV))
+                    else -> specialToken = false
+                }
+                if (specialToken) {
+                    idx++
+                    continue
                 }
             }
 
