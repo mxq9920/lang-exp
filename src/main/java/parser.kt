@@ -77,12 +77,12 @@ class Parser(val tokens: List<Token>) {
         val token = tokens[idx]
         if (token is Token.NUM) {
             idx++
-            return ASTNode.Expr.NumTypeExpr.NumExpr(token.num)
+            return ASTNode.Expr.NumTypeExpr.NumLiteral(token.num)
         }
 
         if (token is Token.ID) {
             idx++
-            return ASTNode.Expr.SymbolExpr(token.id)
+            return ASTNode.Expr.NumTypeExpr.NumSymbol(token.id)
         }
 
         if (token is Token.LB) {
@@ -96,7 +96,7 @@ class Parser(val tokens: List<Token>) {
         return null
     }
 
-    private fun parseExpr(): ASTNode.Expr {
+    private fun parseExpr(): ASTNode.Expr.NumTypeExpr {
         val opStack = Stack<Token.OP>()
         val pStack = Stack<ASTNode.Expr.NumTypeExpr>()
         while (true) {
@@ -117,7 +117,7 @@ class Parser(val tokens: List<Token>) {
                 break
             }
 
-            opStack.push(opToken.op)
+            opStack.push(opToken)
             idx++
         }
         return pStack.pop()
@@ -129,23 +129,23 @@ class Parser(val tokens: List<Token>) {
 
     private fun parseAssignStat(): ASTNode.Stat.AssignStat {
         val symbol = tokens[idx++] as Token.ID
-        swallow(Token.EQ())
+        swallow(Token.ASSIGN)
         return ASTNode.Stat.AssignStat(ASTNode.Expr.SymbolExpr(symbol.id), parseExpr())
     }
 
     private fun parseWhileStat(): ASTNode.Stat.WhileStat {
         swallow(Token.ID("while"))
-        swallow(Token.LB())
+        swallow(Token.LB)
         val cond = parseExpr()
-        swallow(Token.RB())
+        swallow(Token.RB)
         return ASTNode.Stat.WhileStat(cond, parseStat())
     }
 
     private fun parseIfStat(): ASTNode.Stat.IfStat {
         swallow(Token.ID("if"))
-        swallow(Token.LB())
+        swallow(Token.LB)
         val cond = parseExpr()
-        swallow(Token.RB())
+        swallow(Token.RB)
         return ASTNode.Stat.IfStat(cond, parseStat())
     }
 

@@ -9,6 +9,14 @@ sealed class Token {
         }
     }
 
+    companion object {
+        val ASSIGN = ASSIGN()
+        val LB = LB()
+        val RB = RB()
+        val LBR = LBR()
+        val RBR = RBR()
+    }
+
     // =
     class ASSIGN : Token()
 
