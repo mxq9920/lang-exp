@@ -67,7 +67,7 @@ class Parser(val tokens: List<Token>) {
                 idx++
                 break
             }
-            val expr = parseNumExpr()
+            val expr = parseExpr()
             exprList.add(expr)
         }
         return ASTNode.Stat.FuncCallStat(symbol, exprList)
@@ -96,14 +96,47 @@ class Parser(val tokens: List<Token>) {
         return null
     }
 
-    private fun parseNumExpr(): ASTNode.Expr.NumTypeExpr {
+    private fun parseExpr(): ASTNode.Expr {
+        var expr: ASTNode.Expr? = parseNumExpr()
+        if (expr != null) {
+            return expr
+        }
+
+        expr = parseBoolExpr()
+        if (expr != null) {
+            return expr
+        }
+
+        throw ParseFailedException("failed to parse Expression")
+    }
+
+    // !expr
+    // expr || expr
+    // expr && expr
+    // numExpr (> >= < <= == !=) numExpr
+    private fun parseBoolExpr(): ASTNode.Expr.BoolTypeExpr? {
+        val token = tokens[idx]
+        if (token == Token.TRUE) {
+            idx++
+            return ASTNode.Expr.BoolTypeExpr.BoolLiteral(true)
+        }
+
+        if (token == Token.FALSE) {
+            idx++
+            return ASTNode.Expr.BoolTypeExpr.BoolLiteral(false)
+        }
+        // todo
+        return null
+    }
+
+    private fun parseNumExpr(): ASTNode.Expr.NumTypeExpr? {
         val opStack = Stack<Token.OP>()
         val pStack = Stack<ASTNode.Expr.NumTypeExpr>()
         while (true) {
             val p = parseNumFactor() ?: break
             pStack.push(p)
             val opToken = tokens[idx]
-            if (opToken !is Token.OP || (!opStack.isEmpty() && opStack.lastElement().op.priority >= opToken.op.priority)) {
+            if (opToken !is Token.OP || opToken.op !is MathOP || (!opStack.isEmpty() && opStack.lastElement().op.priority >= opToken.op.priority)) {
                 while (!opStack.empty()) {
                     val rp = pStack.pop()
                     val lp = pStack.pop()
@@ -120,7 +153,7 @@ class Parser(val tokens: List<Token>) {
             opStack.push(opToken)
             idx++
         }
-        return pStack.pop()
+        return if (pStack.empty()) null else pStack.pop()
     }
 
     private fun swallow(token: Token) {
@@ -130,13 +163,13 @@ class Parser(val tokens: List<Token>) {
     private fun parseAssignStat(): ASTNode.Stat.AssignStat {
         val symbol = tokens[idx++] as Token.ID
         swallow(Token.ASSIGN)
-        return ASTNode.Stat.AssignStat(ASTNode.Expr.SymbolExpr(symbol.id), parseNumExpr())
+        return ASTNode.Stat.AssignStat(ASTNode.Expr.SymbolExpr(symbol.id), parseExpr())
     }
 
     private fun parseWhileStat(): ASTNode.Stat.WhileStat {
         swallow(Token.ID("while"))
         swallow(Token.LB)
-        val cond = parseNumExpr()
+        val cond = parseBoolExpr()!!
         swallow(Token.RB)
         return ASTNode.Stat.WhileStat(cond, parseStat())
     }
@@ -144,7 +177,7 @@ class Parser(val tokens: List<Token>) {
     private fun parseIfStat(): ASTNode.Stat.IfStat {
         swallow(Token.ID("if"))
         swallow(Token.LB)
-        val cond = parseNumExpr()
+        val cond = parseBoolExpr()!!
         swallow(Token.RB)
         return ASTNode.Stat.IfStat(cond, parseStat())
     }

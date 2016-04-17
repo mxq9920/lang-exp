@@ -113,6 +113,10 @@ class Tokenizer(val code: String) {
                 buf.setLength(0)
                 if (token.matches("\\d+".toRegex())) {
                     tokens.add(Token.NUM(token.toInt()))
+                } else if (token == "true") {
+                    tokens.add(Token.TRUE)
+                } else if (token == "false") {
+                    tokens.add(Token.FALSE)
                 } else {
                     tokens.add(Token.ID(token))
                 }

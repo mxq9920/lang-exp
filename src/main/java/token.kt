@@ -15,6 +15,8 @@ sealed class Token {
         val RB = RB()
         val LBR = LBR()
         val RBR = RBR()
+        val TRUE = TRUE()
+        val FALSE = FALSE()
     }
 
     // =
@@ -38,6 +40,12 @@ sealed class Token {
 
     // }
     class RBR : Token()
+
+    // true
+    class TRUE : Token()
+
+    // false
+    class FALSE : Token()
 
     // calculate operator
     class OP(val op: OPT) : Token() {

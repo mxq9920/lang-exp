@@ -5,8 +5,8 @@ import java.util.*
  */
 sealed class ASTNode {
     sealed class Stat : ASTNode() {
-        class IfStat(val cond: Expr, val block: Stat) : Stat()
-        class WhileStat(val cond: Expr, val block: Stat) : Stat()
+        class IfStat(val cond: Expr.BoolTypeExpr, val block: Stat) : Stat()
+        class WhileStat(val cond: Expr.BoolTypeExpr, val block: Stat) : Stat()
         class BreakStat : Stat()
         class ContinueStat : Stat()
         class AssignStat(val id: Expr.SymbolExpr, val expr: Expr) : Stat()
