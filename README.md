@@ -5,7 +5,7 @@
 函数调用
 
 if while 赋值语句
-## todo list
+
 bool类型，bool运算
 
 字符类型，字符串类型，字符串操作

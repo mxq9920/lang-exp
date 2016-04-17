@@ -74,20 +74,20 @@ class Tokenizer(val code: String) {
                         }
                         '!' -> if (tokenMatch("!=")) {
                             tokens.add(Token.OP(CmpOP.NE))
-                            idx++
+                            idx += 2
                         } else {
                             tokens.add(Token.OP(LogicOP.NOT))
                             idx++
                         }
                         '&' -> if (tokenMatch("&&")) {
                             tokens.add(Token.OP(LogicOP.AND))
-                            idx++
+                            idx += 2
                         } else {
                             throw RuntimeException("failed to match '&&'")
                         }
                         '|' -> if (tokenMatch("||")) {
                             tokens.add(Token.OP(LogicOP.OR))
-                            idx++
+                            idx += 2
                         } else {
                             throw RuntimeException("failed to match '||'")
                         }

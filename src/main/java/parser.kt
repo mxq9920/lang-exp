@@ -115,7 +115,49 @@ class Parser(val tokens: List<Token>) {
     // expr && expr
     // numExpr (> >= < <= == !=) numExpr
     private fun parseBoolExpr(): ASTNode.Expr.BoolTypeExpr? {
+        val opStack = Stack<Token.OP>()
+        val pStack = Stack<ASTNode.Expr.BoolTypeExpr>()
+        while (true) {
+            val p = parseBoolFactor() ?: break
+            pStack.push(p)
+            val opToken = tokens[idx]
+            if (opToken !is Token.OP || opToken.op !is LogicOP || (!opStack.isEmpty() && opStack.lastElement().op.priority >= opToken.op.priority)) {
+                while (!opStack.empty()) {
+                    val rp = pStack.pop()
+                    val lp = pStack.pop()
+                    val op = opStack.pop()
+                    val exp = ASTNode.Expr.BoolTypeExpr.BoolCalExpr(op.op as LogicOP, lp, rp)
+                    pStack.push(exp)
+                }
+            }
+
+            if (opToken !is Token.OP || opToken.op !is LogicOP) {
+                break
+            }
+
+            opStack.push(opToken)
+            idx++
+        }
+        return if (pStack.empty()) null else pStack.pop()
+    }
+
+    private fun parseBoolFactor(): ASTNode.Expr.BoolTypeExpr? {
         val token = tokens[idx]
+        // (
+        if (token == Token.LB) {
+            idx++
+            val expr = parseBoolExpr()
+            swallow(Token.RB)
+            return expr
+        }
+
+        // symbol
+        // num/bool
+        if (token is Token.ID && tokens[idx + 1] is Token.OP && (tokens[idx + 1] as Token.OP).op is LogicOP) {
+            idx++
+            return ASTNode.Expr.BoolTypeExpr.BoolSymbol(token.id)
+        }
+
         // true
         if (token == Token.TRUE) {
             idx++
@@ -142,7 +184,6 @@ class Parser(val tokens: List<Token>) {
             return ASTNode.Expr.BoolTypeExpr.CmpCalExpr(op.op, exprl, exprr!!)
         }
 
-        // todo
         return null
     }
 
