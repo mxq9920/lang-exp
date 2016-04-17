@@ -67,13 +67,13 @@ class Parser(val tokens: List<Token>) {
                 idx++
                 break
             }
-            val expr = parseExpr()
+            val expr = parseNumExpr()
             exprList.add(expr)
         }
         return ASTNode.Stat.FuncCallStat(symbol, exprList)
     }
 
-    private fun parseFactor(): ASTNode.Expr.NumTypeExpr? {
+    private fun parseNumFactor(): ASTNode.Expr.NumTypeExpr? {
         val token = tokens[idx]
         if (token is Token.NUM) {
             idx++
@@ -87,7 +87,7 @@ class Parser(val tokens: List<Token>) {
 
         if (token is Token.LB) {
             idx++
-            var expr = parseExpr()
+            var expr = parseNumExpr()
             assert(tokens[idx + 1] is Token.RB)
             idx++
             return expr
@@ -96,11 +96,11 @@ class Parser(val tokens: List<Token>) {
         return null
     }
 
-    private fun parseExpr(): ASTNode.Expr.NumTypeExpr {
+    private fun parseNumExpr(): ASTNode.Expr.NumTypeExpr {
         val opStack = Stack<Token.OP>()
         val pStack = Stack<ASTNode.Expr.NumTypeExpr>()
         while (true) {
-            val p = parseFactor() ?: break
+            val p = parseNumFactor() ?: break
             pStack.push(p)
             val opToken = tokens[idx]
             if (opToken !is Token.OP || (!opStack.isEmpty() && opStack.lastElement().op.priority >= opToken.op.priority)) {
@@ -130,13 +130,13 @@ class Parser(val tokens: List<Token>) {
     private fun parseAssignStat(): ASTNode.Stat.AssignStat {
         val symbol = tokens[idx++] as Token.ID
         swallow(Token.ASSIGN)
-        return ASTNode.Stat.AssignStat(ASTNode.Expr.SymbolExpr(symbol.id), parseExpr())
+        return ASTNode.Stat.AssignStat(ASTNode.Expr.SymbolExpr(symbol.id), parseNumExpr())
     }
 
     private fun parseWhileStat(): ASTNode.Stat.WhileStat {
         swallow(Token.ID("while"))
         swallow(Token.LB)
-        val cond = parseExpr()
+        val cond = parseNumExpr()
         swallow(Token.RB)
         return ASTNode.Stat.WhileStat(cond, parseStat())
     }
@@ -144,7 +144,7 @@ class Parser(val tokens: List<Token>) {
     private fun parseIfStat(): ASTNode.Stat.IfStat {
         swallow(Token.ID("if"))
         swallow(Token.LB)
-        val cond = parseExpr()
+        val cond = parseNumExpr()
         swallow(Token.RB)
         return ASTNode.Stat.IfStat(cond, parseStat())
     }
