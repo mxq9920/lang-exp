@@ -116,15 +116,32 @@ class Parser(val tokens: List<Token>) {
     // numExpr (> >= < <= == !=) numExpr
     private fun parseBoolExpr(): ASTNode.Expr.BoolTypeExpr? {
         val token = tokens[idx]
+        // true
         if (token == Token.TRUE) {
             idx++
             return ASTNode.Expr.BoolTypeExpr.BoolLiteral(true)
         }
 
+        // false
         if (token == Token.FALSE) {
             idx++
             return ASTNode.Expr.BoolTypeExpr.BoolLiteral(false)
         }
+
+        // numExpr cmpOP numExpr
+        var exprl = parseNumExpr()
+        if (exprl != null) {
+            val op = tokens[idx]
+            if (op !is Token.OP || op.op !is CmpOP) {
+                throw ParseFailedException("parse num cmp expr, but operator is invalid [$op]")
+            }
+
+            idx++
+            var exprr: ASTNode.Expr.NumTypeExpr? = parseNumExpr() ?: throw ParseFailedException("parse num cmp expr failed, but second arg is not num expr")
+
+            return ASTNode.Expr.BoolTypeExpr.CmpCalExpr(op.op, exprl, exprr!!)
+        }
+
         // todo
         return null
     }
@@ -146,7 +163,7 @@ class Parser(val tokens: List<Token>) {
                 }
             }
 
-            if (opToken !is Token.OP) {
+            if (opToken !is Token.OP || opToken.op !is MathOP) {
                 break
             }
 

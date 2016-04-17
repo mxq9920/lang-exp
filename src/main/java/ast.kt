@@ -15,17 +15,17 @@ sealed class ASTNode {
     }
 
     sealed class Expr : ASTNode() {
-        sealed class NumTypeExpr: Expr() {
-            class NumSymbol(val id: String): NumTypeExpr()
+        sealed class NumTypeExpr : Expr() {
+            class NumSymbol(val id: String) : NumTypeExpr()
             class NumLiteral(val num: Int) : NumTypeExpr()
             class MathCalExpr(val opr: MathOP, val lp: NumTypeExpr, val rp: NumTypeExpr) : NumTypeExpr()
         }
 
-        sealed class BoolTypeExpr: Expr() {
-            class BoolSymbol(val id: String): BoolTypeExpr()
+        sealed class BoolTypeExpr : Expr() {
+            class BoolSymbol(val id: String) : BoolTypeExpr()
             class BoolLiteral(val value: Boolean) : BoolTypeExpr()
-            class BoolCalExpr(val op: LogicOP, val lp: BoolTypeExpr, val rp: BoolTypeExpr)
-            class CmpCalExpr(val op: CmpOP, val lp: NumTypeExpr, val rp: NumTypeExpr)
+            class BoolCalExpr(val op: LogicOP, val lp: BoolTypeExpr, val rp: BoolTypeExpr) : BoolTypeExpr()
+            class CmpCalExpr(val op: CmpOP, val lp: NumTypeExpr, val rp: NumTypeExpr) : BoolTypeExpr()
         }
 
         class SymbolExpr(val id: String) : Expr()

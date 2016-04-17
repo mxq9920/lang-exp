@@ -7,11 +7,11 @@ val sample = """
 a = (1 + 2) * 3
 b = 4 - a * 5
 print(a * b)
-if (true) {
+if (a < b) {
     print(123)
 }
 i = 0
-while (false) {
+while (i < 10) {
     print(i)
     i = i - 1
 }
