@@ -5,8 +5,8 @@ import java.util.*
  */
 sealed class ASTNode {
     sealed class Stat : ASTNode() {
-        class IfStat(val cond: Expr, val block: Stat) : Stat()
-        class WhileStat(val cond: Expr, val block: Stat) : Stat()
+        class IfStat(val cond: Expr.BoolTypeExpr, val block: Stat) : Stat()
+        class WhileStat(val cond: Expr.BoolTypeExpr, val block: Stat) : Stat()
         class BreakStat : Stat()
         class ContinueStat : Stat()
         class AssignStat(val id: Expr.SymbolExpr, val expr: Expr) : Stat()
@@ -15,28 +15,19 @@ sealed class ASTNode {
     }
 
     sealed class Expr : ASTNode() {
-        class NumExpr(val num: Int) : Expr()
+        sealed class NumTypeExpr : Expr() {
+            class NumSymbol(val id: String) : NumTypeExpr()
+            class NumLiteral(val num: Int) : NumTypeExpr()
+            class MathCalExpr(val opr: MathOP, val lp: NumTypeExpr, val rp: NumTypeExpr) : NumTypeExpr()
+        }
+
+        sealed class BoolTypeExpr : Expr() {
+            class BoolSymbol(val id: String) : BoolTypeExpr()
+            class BoolLiteral(val value: Boolean) : BoolTypeExpr()
+            class BoolCalExpr(val op: LogicOP, val lp: BoolTypeExpr, val rp: BoolTypeExpr) : BoolTypeExpr()
+            class CmpCalExpr(val op: CmpOP, val lp: NumTypeExpr, val rp: NumTypeExpr) : BoolTypeExpr()
+        }
+
         class SymbolExpr(val id: String) : Expr()
-        class CalExpr(val opr: OP, val lp: Expr, val rp: Expr) : Expr()
     }
-}
-
-enum class OP {
-    ADD, SUB, MUL, DIV
-}
-
-fun String.toCAL() = when (this) {
-    "+" -> Token.CAL.ADD()
-    "-" -> Token.CAL.SUB()
-    "*" -> Token.CAL.MUL()
-    "/" -> Token.CAL.DIV()
-    else -> throw RuntimeException()
-}
-
-fun String.toOP() = when (this) {
-    "+" -> OP.ADD
-    "-" -> OP.SUB
-    "*" -> OP.MUL
-    "/" -> OP.DIV
-    else -> throw RuntimeException()
 }

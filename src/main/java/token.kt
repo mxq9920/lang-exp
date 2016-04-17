@@ -9,11 +9,18 @@ sealed class Token {
         }
     }
 
+    companion object {
+        val ASSIGN = ASSIGN()
+        val LB = LB()
+        val RB = RB()
+        val LBR = LBR()
+        val RBR = RBR()
+        val TRUE = TRUE()
+        val FALSE = FALSE()
+    }
+
     // =
     class ASSIGN : Token()
-
-    // ==
-    class EQ : Token()
 
     // 1-9+
     class NUM(val num: Int) : Token() {
@@ -34,12 +41,42 @@ sealed class Token {
     // }
     class RBR : Token()
 
+    // true
+    class TRUE : Token()
+
+    // false
+    class FALSE : Token()
+
     // calculate operator
-    sealed class CAL(val pr: Int, val symbol: String) : Token() {
-        class ADD : CAL(0, "+")
-        class SUB : CAL(0, "-")
-        class MUL : CAL(1, "*")
-        class DIV : CAL(1, "/")
-        class MOD : CAL(1, "%")
+    class OP(val op: OPT) : Token() {
+        override fun toString() = "Token\$OP[$op]"
     }
+}
+
+interface OPT {
+    val priority: Int
+}
+
+enum class MathOP(override  val priority: Int, val str: String) : OPT {
+    ADD(4, "+"),
+    SUB(4, "-"),
+    MUL(5, "*"),
+    DIV(5, "/"),
+}
+
+enum class LogicOP(override val priority: Int, val str: String) : OPT {
+    AND(2, "&&"),
+    OR(1, "||"),
+    NOT(3, "!"),
+}
+
+enum class CmpOP(override val priority: Int,val str: String) : OPT {
+    NE("!="),
+    EQ("=="),
+    GT(">"),
+    LT("<"),
+    GE(">="),
+    LE("<=");
+
+    private constructor(str: String): this(0, str)
 }
